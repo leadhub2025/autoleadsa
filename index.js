@@ -26,7 +26,7 @@ const EMAIL_SCHEMA = {
     },
     value_proposition: {
       type: Type.STRING,
-      description: "A one-sentence summary of the core value provided by Autoleadsa1."
+      description: "A one-sentence summary of the core value provided by Autoleadsa."
     },
     // --- NEW LEAD PROFILE OBJECT ---
     lead_profile: {
@@ -72,7 +72,7 @@ app.get('/api/generate', async (req, res) => {
     }
 
     // Construct the prompt (UPDATED INSTRUCTION)
-    const prompt = `Generate a cold email, including the subject line, body, and a detailed lead profile, for a lead generation tool named Autoleadsa1, targeting a lead in the industry: "${topic}". Ensure the tone is professional, the email focuses on solving the primary challenge, and the lead profile is fully accurate based on the industry.`;
+    const prompt = `Generate a cold email, including the subject line, body, and a detailed lead profile, for a lead generation tool named Autoleadsa, targeting a lead in the industry: "${topic}". Ensure the tone is professional, the email focuses on solving the primary challenge, and the lead profile is fully accurate based on the industry.`;
 
     try {
         const response = await ai.models.generateContent({
@@ -122,7 +122,7 @@ app.get('/api/generate', async (req, res) => {
 
 // Root path handler
 app.get('/', (req, res) => {
-    res.send("Autoleadsa1 API is running. Use the /api/generate?topic=YOUR_TOPIC endpoint to get started.");
+    res.send("Autoleadsa API is running. Use the /api/generate?topic=YOUR_TOPIC endpoint to get started.");
 });
 
 

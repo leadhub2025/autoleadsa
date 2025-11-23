@@ -1,3 +1,46 @@
+# Copilot / AI Agent Instructions — Autoleadsa
+
+This file gives concise, actionable guidance so an AI coding agent can be productive quickly.
+
+Overview
+- Project: Node.js HTTP server using Express and Google GenAI (`@google/genai`).
+- Entry point: `index.js` (declared as `main` in `package.json`).
+
+Key files
+- `index.js` — app startup, Express routes, and examples of `@google/genai` usage. Search for `GEMINI_API_KEY` here.
+- `package.json` — scripts, dependencies, and the `type` field (must match the module style).
+- `vercel.json` — deployment hints/config for Vercel when present.
+
+How to run (local, PowerShell)
+- Temporary env + run (PowerShell):
+  - `$env:GEMINI_API_KEY = "your_key"; node index.js`
+- Recommended `package.json` script:
+  - Add: `"start": "node index.js"` so `npm start` works.
+
+Important repo-specific notes
+- `index.js` is written with ESM `import` — the repo should use `"type": "module"` in `package.json`. There is currently a conflicting `type` entry; remove duplicates and keep one.
+- `index.js` references `GEMINI_API_KEY` (Gemini client). Never commit secret keys; prefer env vars and a `.env.example`.
+
+Patterns & conventions
+- Use ESM (`import`/`export`) consistently. If you change module style, migrate repository-wide.
+- Keep Express route handlers small; move business logic into `lib/` or `services/` modules.
+- Initialize external clients (e.g., GenAI) during startup — avoid heavy side-effects at top-level module execution.
+
+Troubleshooting
+- "Cannot use import statement outside a module": confirm Node 18+ and `package.json` `"type": "module"`.
+- GenAI auth errors: ensure `GEMINI_API_KEY` is set in the environment before running.
+
+Edit rules for agents
+- Preserve module-system consistency; do not mix ESM and CommonJS in new files.
+- Do not commit secrets; add or update a `.env.example` and document env vars in `README.md`.
+- If you add deps, update `package.json` and keep changes minimal and documented in the PR description.
+
+If you modify this file
+- Keep entries short and fact-based. Update paths and examples when files move or startup changes.
+
+Questions for maintainers
+- Preferred `package.json` `type`: `"module"` (recommended) or `"commonjs"`?
+- Where should env setup be documented: `README.md` or a dedicated `.env.example`?
 # Copilot / AI Agent Instructions for Autoleadsa1
 
 This file contains concise, repo-specific guidance to help AI coding agents be productive in this project.
