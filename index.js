@@ -10,8 +10,7 @@ const ai = new GoogleGenAI({});
 app.use(express.json());
 
 // ----------------------------------------------------
-// 1. Define the Required JSON Schema
-// This tells the Gemini model EXACTLY what structure to use.
+// 1. Define the Required JSON Schema (EXPANDED)
 // ----------------------------------------------------
 
 const EMAIL_SCHEMA = {
@@ -28,66 +27,37 @@ const EMAIL_SCHEMA = {
     value_proposition: {
       type: Type.STRING,
       description: "A one-sentence summary of the core value provided by Autoleadsa1."
+    },
+    // --- NEW LEAD PROFILE OBJECT ---
+    lead_profile: {
+      type: Type.OBJECT,
+      description: "A hypothesized profile for the target lead based on the industry.",
+      properties: {
+        role: {
+          type: Type.STRING,
+          description: "The most likely job title of the target lead (e.g., VP of Sales, Marketing Director)."
+        },
+        primary_challenge: {
+          type: Type.STRING,
+          description: "The biggest operational challenge this specific lead role faces in this industry (e.g., High client churn, Manual data entry)."
+        },
+        predicted_annual_revenue_usd: {
+          type: Type.STRING,
+          description: "The estimated minimum annual revenue for the lead's company in USD (e.g., $5M, $10M+)."
+        }
+      },
+      required: ["role", "primary_challenge", "predicted_annual_revenue_usd"]
     }
   },
-  required: ["subject", "body_html", "value_proposition"]
+  // --- UPDATE REQUIRED LIST ---
+  required: ["subject", "body_html", "value_proposition", "lead_profile"]
 };
 
-// ----------------------------------------------------
-// Define the API Endpoint
-// ----------------------------------------------------
+// ... existing app.get('/api/generate', async (req, res) => { ...
 
-app.get('/api/generate', async (req, res) => {
-    
-    const model = "gemini-2.5-flash"; 
-    
-    // Get the dynamic topic from the URL query parameters
-    const topic = req.query.topic;
+    // Construct the prompt (UPDATED INSTRUCTION)
+    const prompt = `Generate a cold email, including the subject line, body, and a detailed lead profile, for a lead generation tool named Autoleadsa1, targeting a lead in the industry: "${topic}". Ensure the tone is professional, the email focuses on solving the primary challenge, and the lead profile is fully accurate based on the industry.`;
 
-    if (!topic) {
-        return res.status(400).json({
-            success: false,
-            message: "Missing 'topic' query parameter. Example usage: /api/generate?topic=new marketing agency"
-        });
-    }
-
-    // Construct the prompt using the dynamic input
-    const prompt = `Generate a cold email, including the subject line and body, for a lead generation tool named Autoleadsa1, targeting a lead in the industry: "${topic}". Ensure the tone is professional and focuses on solving a pain point specific to that industry.`;
-
-    try {
-        const response = await ai.models.generateContent({
-            model: model,
-            contents: prompt,
-            config: {
-                // 2. Enforce JSON output for the entire response
-                responseMimeType: "application/json", 
-                responseSchema: EMAIL_SCHEMA, // 3. Use the schema we defined above
-            }
-        });
-
-        // 4. The response.text is now a guaranteed JSON string.
-        // We parse it before sending it back.
-        const parsedJson = JSON.parse(response.text);
-
-        res.status(200).json({
-            success: true,
-            topic: topic,
-            generated_data: parsedJson // Send the structured data
-        });
-
-    } catch (error) {
-        console.error("Gemini API Error:", error);
-        res.status(500).json({
-            success: false,
-            message: "Failed to call Gemini API",
-            error: error.message
-        });
-    }
-});
-
-// Root path handler
-app.get('/', (req, res) => {
-    res.send("Autoleadsa1 API is running. Use the /api/generate?topic=YOUR_TOPIC endpoint to get started.");
-});
+// ... rest of the app.get function remains the same ...
 
 export default app;
